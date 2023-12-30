@@ -132,16 +132,9 @@ router.put(
           .json({ errorMessage: "댓글 내용을 입력하세요!" });
       }
 
-      const [review, comment] = await Promise.all([
-        prisma.review.findUnique({
-          where: { id: review_id },
-        }),
-        prisma.comment.findUnique({
-          where: {
-            id,
-          },
-        }),
-      ]);
+      const review = await prisma.review.findUnique({
+        where: { id: review_id },
+      });
 
       if (!review) {
         return res
@@ -149,6 +142,11 @@ router.put(
           .json({ errorMessage: "존재하지 않는 리뷰입니다." });
       }
 
+      const comment = await prisma.comment.findUnique({
+        where: {
+          id,
+        },
+      }); // 코멘트 값이 없을 경우.
       if (!comment) {
         return res.status(404).json({ errorMessage: "없는 댓글입니다." });
       }
@@ -183,16 +181,15 @@ router.delete(
       const { review_id, id } = req.params;
       const { password } = req.body;
 
-      const [review, comment] = await Promise.all([
-        prisma.review.findUnique({
-          where: { id: review_id },
-        }),
-        prisma.comment.findUnique({
-          where: {
-            id,
-          },
-        }),
-      ]);
+      const review = await prisma.review.findUnique({
+        where: { id: review_id },
+      });
+
+      const comment = await prisma.comment.findUnique({
+        where: {
+          id,
+        },
+      });
 
       if (!review) {
         return res
